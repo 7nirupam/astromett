@@ -16,8 +16,12 @@ class AppTypography {
     final height = size.height;
 
     double defaultSize;
-    if (width < 600) {
-      defaultSize = 34.0;
+    if (width < 360) {
+      defaultSize = 28.0;
+    } else if (width < 420) {
+      defaultSize = 32.0;
+    } else if (width < 600) {
+      defaultSize = 35.0;
     } else if (width < 900) {
       defaultSize = 44.0;
     } else if (height < 720) {
@@ -30,7 +34,7 @@ class AppTypography {
     }
 
     final fontSize = fontSizeOverride ?? defaultSize;
-    final lineHeight = width < 600 ? 1.18 : 1.12;
+    final lineHeight = width < 360 ? 1.22 : (width < 600 ? 1.18 : 1.12);
 
     return GoogleFonts.cormorantGaramond(
       fontSize: fontSize,

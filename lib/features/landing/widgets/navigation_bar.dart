@@ -29,12 +29,19 @@ class AstromettNavigationBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
     final isDesktopNav = width >= 900;
+    final isSmallMobile = width < 360;
+    final isMobile = width < 600;
+
+    final double brandFontSize = isSmallMobile ? 18.5 : (isMobile ? 20.5 : 22.0);
+    final double brandLetterSpacing = isSmallMobile ? 2.2 : (isMobile ? 2.8 : 3.5);
+    final double brandIconSize = isSmallMobile ? 16.5 : 19.0;
+    final double brandGap = isSmallMobile ? 8.0 : 10.0;
 
     return ClipRRect(
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
         child: Container(
-          height: 76,
+          height: navHeight,
           decoration: BoxDecoration(
             color: AppColors.midnightNavy.withValues(alpha: 0.82),
             border: Border(
@@ -52,33 +59,39 @@ class AstromettNavigationBar extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Brand Logo & Wordmark (Aligned, centered)
-                InkWell(
-                  onTap: onHomeTap,
-                  splashColor: Colors.transparent,
-                  highlightColor: Colors.transparent,
-                  hoverColor: Colors.transparent,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.auto_awesome,
-                          color: AppColors.champagneGold,
-                          size: 19,
+                // Brand Logo & Wordmark (Fully visible, responsive scaling, never overlaps hamburger)
+                Flexible(
+                  child: InkWell(
+                    onTap: onHomeTap,
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    hoverColor: Colors.transparent,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.auto_awesome,
+                              color: AppColors.champagneGold,
+                              size: brandIconSize,
+                            ),
+                            SizedBox(width: brandGap),
+                            Text(
+                              AppConstants.appName,
+                              style: AppTypography.brandLogo.copyWith(
+                                fontSize: brandFontSize,
+                                height: 1.0,
+                                letterSpacing: brandLetterSpacing,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 10),
-                        Text(
-                          AppConstants.appName,
-                          style: AppTypography.brandLogo.copyWith(
-                            fontSize: 22,
-                            height: 1.0,
-                            letterSpacing: 3.5,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
@@ -100,14 +113,17 @@ class AstromettNavigationBar extends StatelessWidget {
                   ),
                 ] else ...[
                   // Mobile / Tablet Hamburger Menu Button
-                  IconButton(
-                    icon: const Icon(
-                      Icons.menu,
-                      color: AppColors.champagneGold,
-                      size: 26,
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.menu,
+                        color: AppColors.champagneGold,
+                        size: 26,
+                      ),
+                      onPressed: onMenuOpen,
+                      tooltip: 'Open Navigation Menu',
                     ),
-                    onPressed: onMenuOpen,
-                    tooltip: 'Open Navigation Menu',
                   ),
                 ],
               ],

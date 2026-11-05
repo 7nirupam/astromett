@@ -151,7 +151,7 @@ class HeroSection extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildEyebrowBadge(),
+              _buildEyebrowBadge(context),
               SizedBox(height: gapEyebrow),
               ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 620),
@@ -220,12 +220,15 @@ class HeroSection extends StatelessWidget {
   }
 
   Widget _buildStackedHero(BuildContext context, {required bool isMobile}) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final isSmallMobile = screenWidth < 360;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
-        _buildEyebrowBadge(),
-        const SizedBox(height: 16),
+        _buildEyebrowBadge(context),
+        SizedBox(height: isSmallMobile ? 12.0 : 16.0),
         ConstrainedBox(
           constraints: BoxConstraints(maxWidth: isMobile ? 380 : 580),
           child: Text(
@@ -234,7 +237,7 @@ class HeroSection extends StatelessWidget {
             style: AppTypography.heroHeading(context),
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: isSmallMobile ? 12.0 : 16.0),
         ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 520),
           child: Text(
@@ -242,12 +245,12 @@ class HeroSection extends StatelessWidget {
             textAlign: TextAlign.center,
             style: AppTypography.bodyLarge.copyWith(
               color: AppColors.softIvory.withValues(alpha: 0.9),
-              fontSize: isMobile ? 15.0 : 16.5,
+              fontSize: isSmallMobile ? 14.0 : (isMobile ? 15.0 : 16.5),
               height: 1.6,
             ),
           ),
         ),
-        const SizedBox(height: 28),
+        SizedBox(height: isSmallMobile ? 22.0 : 28.0),
         Wrap(
           spacing: 16,
           runSpacing: 12,
@@ -258,6 +261,10 @@ class HeroSection extends StatelessWidget {
               onPressed: onJoinEarlyAccess,
               icon: Icons.auto_awesome,
               width: isMobile ? double.infinity : null,
+              padding: EdgeInsets.symmetric(
+                horizontal: isSmallMobile ? 20 : 28,
+                vertical: isSmallMobile ? 14 : 16,
+              ),
             ),
             PrimaryButton(
               text: 'Discover How It Works',
@@ -265,11 +272,15 @@ class HeroSection extends StatelessWidget {
               onPressed: onDiscoverHowItWorks,
               icon: Icons.arrow_downward,
               width: isMobile ? double.infinity : null,
+              padding: EdgeInsets.symmetric(
+                horizontal: isSmallMobile ? 20 : 28,
+                vertical: isSmallMobile ? 14 : 16,
+              ),
             ),
           ],
         ),
         const SizedBox(height: 32),
-        _buildFeaturePills(isCompact: true),
+        _buildFeaturePills(isCompact: true, isCentered: true),
         const SizedBox(height: 36),
         // Position celestial card naturally in stacked flow on tablet & mobile
         _buildCelestialAccent(context, isCompact: true),
@@ -277,9 +288,36 @@ class HeroSection extends StatelessWidget {
     );
   }
 
-  Widget _buildEyebrowBadge() {
+  Widget _buildEyebrowBadge(BuildContext context) {
+    final width = MediaQuery.sizeOf(context).width;
+    final isSmallMobile = width < 360;
+    final isMobile = width < 600;
+    final isTablet = width >= 600 && width < 900;
+
+    final double fontSize = isSmallMobile
+        ? 8.5
+        : (isMobile
+            ? 9.5
+            : (isTablet ? 10.0 : 10.5));
+
+    final double letterSpacing = isSmallMobile
+        ? 0.6
+        : (isMobile
+            ? 1.0
+            : (isTablet ? 1.5 : 2.0));
+
+    final EdgeInsets badgePadding = EdgeInsets.symmetric(
+      horizontal: isSmallMobile ? 10.0 : (isMobile ? 12.0 : 14.0),
+      vertical: isMobile ? 5.5 : 6.5,
+    );
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6.5),
+      constraints: BoxConstraints(
+        maxWidth: isSmallMobile
+            ? width - 36
+            : (isMobile ? width - 44 : 520),
+      ),
+      padding: badgePadding,
       decoration: BoxDecoration(
         color: AppColors.deepCosmicPurple.withValues(alpha: 0.65),
         borderRadius: BorderRadius.circular(30),
@@ -296,22 +334,25 @@ class HeroSection extends StatelessWidget {
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Icon(
+          Icon(
             Icons.auto_awesome,
-            size: 13,
+            size: isMobile ? 11.5 : 13.0,
             color: AppColors.champagneGold,
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: isMobile ? 6.0 : 8.0),
           Flexible(
             child: Text(
               AppConstants.heroEyebrow,
+              textAlign: TextAlign.center,
+              softWrap: true,
               style: AppTypography.eyebrow.copyWith(
-                fontSize: 10.5,
-                letterSpacing: 2.0,
+                fontSize: fontSize,
+                letterSpacing: letterSpacing,
+                height: 1.3,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],
@@ -319,7 +360,7 @@ class HeroSection extends StatelessWidget {
     );
   }
 
-  Widget _buildFeaturePills({bool isCompact = false}) {
+  Widget _buildFeaturePills({bool isCompact = false, bool isCentered = false}) {
     final items = [
       'Vedic Kundali Matching',
       'Western Zodiac Insights',
@@ -329,7 +370,7 @@ class HeroSection extends StatelessWidget {
     return Wrap(
       spacing: isCompact ? 12 : 18,
       runSpacing: 8,
-      alignment: WrapAlignment.start,
+      alignment: isCentered ? WrapAlignment.center : WrapAlignment.start,
       children: items.map((item) {
         return FittedBox(
           fit: BoxFit.scaleDown,
@@ -359,6 +400,9 @@ class HeroSection extends StatelessWidget {
   }
 
   Widget _buildCelestialAccent(BuildContext context, {bool isCompact = false}) {
+    final width = MediaQuery.sizeOf(context).width;
+    final isSmallMobile = width < 360;
+
     return ConstrainedBox(
       constraints: BoxConstraints(maxWidth: isCompact ? 340 : 370),
       child: ClipRRect(
@@ -366,7 +410,7 @@ class HeroSection extends StatelessWidget {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
           child: Container(
-            padding: EdgeInsets.all(isCompact ? 20 : 26),
+            padding: EdgeInsets.all(isSmallMobile ? 16 : (isCompact ? 20 : 26)),
             decoration: BoxDecoration(
               color: AppColors.deepCosmicPurple.withValues(alpha: 0.30),
               borderRadius: BorderRadius.circular(16),
@@ -401,8 +445,8 @@ class HeroSection extends StatelessWidget {
                     Text(
                       'CELESTIAL HARMONY',
                       style: AppTypography.eyebrow.copyWith(
-                        fontSize: 10.0,
-                        letterSpacing: 2.0,
+                        fontSize: isSmallMobile ? 9.0 : 10.0,
+                        letterSpacing: isSmallMobile ? 1.2 : 2.0,
                       ),
                     ),
                   ],
@@ -411,7 +455,7 @@ class HeroSection extends StatelessWidget {
                 Text(
                   'Two Charts, One Alignment',
                   style: AppTypography.cardHeading.copyWith(
-                    fontSize: isCompact ? 18 : 20,
+                    fontSize: isSmallMobile ? 17 : (isCompact ? 18 : 20),
                     color: AppColors.warmIvory,
                   ),
                 ),

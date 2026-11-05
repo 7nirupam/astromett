@@ -15,7 +15,9 @@ class ResponsiveContainer extends StatelessWidget {
 
   static double horizontalPadding(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
-    if (width < AppConstants.mobileBreakpoint) {
+    if (width < 360) {
+      return 16.0;
+    } else if (width < AppConstants.mobileBreakpoint) {
       return 20.0;
     } else if (width < AppConstants.tabletBreakpoint) {
       return 36.0;
